@@ -146,6 +146,35 @@ access_miembro_familia_admin,miembro_familia.admin,familia.model_familia_miembro
 - **access_miembro_familia_manager**: Permite al grupo `Familia Manager` leer, escribir, crear y eliminar registros en el modelo `familia.miembro`.
 - **access_miembro_familia_admin**: Permite al grupo de administración (`base.group_system`) realizar todas las operaciones en el modelo `familia.miembro`.
 
+## Requisitos de Permisos
+
+Para gestionar el módulo **Familia** correctamente, es necesario que el usuario administrador esté incluido en el grupo **Familia Manager**. Este grupo tiene permisos específicos que permiten la administración completa de las funcionalidades del módulo.
+
+### Incluir al Usuario Administrador en el Grupo Familia Manager
+
+1. **Accede a la Configuración de Usuarios**:
+   - Ve a la interfaz de Odoo.
+   - Navega a `Configuración` > `Usuarios y Compañías` > `Usuarios`.
+
+2. **Selecciona el Usuario Administrador**:
+   - Busca y selecciona el usuario `Administrador` o el usuario que desees añadir al grupo.
+
+3. **Añadir el Usuario al Grupo Familia Manager**:
+   - Dentro de la configuración del usuario, desplázate a la sección de `Grupos`.
+   - Asegúrate de que el grupo **Familia Manager** esté seleccionado. Si no está, selecciónalo para añadir al usuario a este grupo.
+
+### Importancia del Grupo Familia Manager
+
+El grupo **Familia Manager** es crucial para el funcionamiento del módulo **Familia** porque otorga permisos para:
+
+- **Leer**: Visualizar registros de familias y miembros.
+- **Escribir**: Modificar registros existentes.
+- **Crear**: Añadir nuevos registros de familias y miembros.
+- **Eliminar**: Borrar registros de familias y miembros.
+
+Solo los usuarios que formen parte de este grupo tendrán acceso completo a las funcionalidades administrativas del módulo **Familia**. Asegúrate de que el usuario administrador esté correctamente asignado a este grupo para evitar problemas de permisos.
+
+
 
 ## Datos del Módulo
 
