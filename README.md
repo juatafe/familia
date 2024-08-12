@@ -131,8 +131,6 @@ Esta regla asegura que los usuarios del grupo **Familia Manager** puedan ver tod
 
 Esta regla asegura que los usuarios del grupo **Familia Manager** puedan ver todos los registros del modelo `familia.miembro`.
 
-
-
 ### Accesos Definidos en el Archivo `ir.model.access.csv`
 
 Además de las reglas de acceso, se definen permisos detallados en el archivo `ir.model.access.csv`:
