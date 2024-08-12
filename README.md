@@ -29,3 +29,145 @@ Para instalar el módulo **Familia**, sigue estos pasos:
 1. **Clonar el repositorio**:
    ```bash
    git clone https://github.com/juatafe/familia.git
+
+
+### Copiar el módulo en la carpeta de módulos de Odoo:
+
+```bash
+cp -R familia /ruta/a/odoo/addons/
+
+```
+
+## Actualizar la lista de aplicaciones
+
+Ve a la interfaz de Odoo > `Apps` > `Actualizar la lista de módulos`.
+
+## Instalar el módulo
+
+Busca "Familia" en la lista de aplicaciones disponibles y haz clic en `Instalar`.
+
+## Uso
+
+### Configuración Inicial
+
+- **Crear Familias**: Accede al menú `Familias` y crea nuevas familias.
+- **Añadir Miembros**: Agrega miembros existentes (clientes) a las familias creadas.
+- **Gestionar Saldos**: El saldo total de la familia se actualizará automáticamente al añadir nuevos miembros.
+
+### Gestión de Familias
+
+- **Ver Familias**: Consulta la lista de familias y sus detalles, incluidos los saldos y los miembros asociados.
+- **Eliminar Miembros**: Al eliminar un miembro, su saldo se restablecerá a cero y se desvinculará de la familia.
+
+## Seguridad
+
+Este módulo incluye reglas de seguridad personalizadas definidas en:
+
+- `security/familia_security.xml`
+- `security/ir.model.access.csv`
+
+Estas reglas controlan el acceso a las diferentes vistas y operaciones dentro del módulo, asegurando que solo los usuarios autorizados puedan gestionar familias y miembros.
+
+En el módulo **Familia** de Odoo, se definen reglas de acceso y grupos de usuarios que controlan qué acciones pueden realizar ciertos usuarios en los modelos específicos del módulo. A continuación se explica cómo se configuran estos elementos.
+
+### Grupos de Usuarios
+
+Los grupos de usuarios en Odoo se utilizan para organizar y asignar permisos a los usuarios. En el módulo **Familia**, se ha creado un grupo específico llamado **Familia Manager**:
+
+```xml
+<record id="group_familia_manager" model="res.groups">
+    <field name="name">Familia Manager</field>
+    <field name="category_id" ref="base.module_category_sales"/>
+</record>
+
+```
+### Grupo de Usuarios: Familia Manager
+
+- **id**: `group_familia_manager` — Identificador único del grupo.
+- **name**: `Familia Manager` — Nombre del grupo.
+- **category_id**: `base.module_category_sales` — Categoría del grupo dentro de Odoo, en este caso se clasifica bajo la categoría de Ventas.
+
+Este grupo se utilizará para asignar permisos específicos sobre los modelos del módulo **Familia**.
+
+### Reglas de Acceso
+
+Las reglas de acceso en Odoo determinan qué registros puede ver, crear, modificar o eliminar un usuario en un modelo específico. Aquí se muestran las reglas de acceso definidas para el módulo **Familia**.
+
+#### Regla de Acceso para el Modelo `familia`
+
+
+```xml
+<record id="familia_familia_rule" model="ir.rule">
+    <field name="name">Familia: ver todas</field>
+    <field name="model_id" ref="familia.model_familia"/>
+    <field name="groups" eval="[(4, ref('group_familia_manager'))]"/>
+    <field name="domain_force">[(1, '=', 1)]</field>
+</record>
+```
+- **id**: `familia_familia_rule` — Identificador único de la regla.
+- **name**: `Familia: ver todas` — Nombre de la regla de acceso.
+- **model_id**: `familia.model_familia` — Especifica que la regla se aplica al modelo `familia`.
+- **groups**: `group_familia_manager` — Define que esta regla se aplica al grupo `Familia Manager`.
+- **domain_force**: `[(1, '=', 1)]` — Permite el acceso a todos los registros del modelo `familia`.
+
+Esta regla asegura que los usuarios del grupo **Familia Manager** puedan ver todos los registros del modelo `familia`.
+
+#### Regla de Acceso para el Modelo `familia.miembro`
+
+```xml
+<record id="familia_miembro_rule" model="ir.rule">
+    <field name="name">Miembro de Familia: ver todos</field>
+    <field name="model_id" ref="familia.model_familia_miembro"/>
+    <field name="groups" eval="[(4, ref('group_familia_manager'))]"/>
+    <field name="domain_force">[(1, '=', 1)]</field>
+</record>
+```
+
+- **id**: `familia_miembro_rule` — Identificador único de la regla.
+- **name**: `Miembro de Familia: ver todos` — Nombre de la regla de acceso.
+- **model_id**: `familia.model_familia_miembro` — Especifica que la regla se aplica al modelo `familia.miembro`.
+- **groups**: `group_familia_manager` — Define que esta regla se aplica al grupo `Familia Manager`.
+- **domain_force**: `[(1, '=', 1)]` — Permite el acceso a todos los registros del modelo `familia.miembro`.
+
+Esta regla asegura que los usuarios del grupo **Familia Manager** puedan ver todos los registros del modelo `familia.miembro`.
+
+
+
+### Accesos Definidos en el Archivo `ir.model.access.csv`
+
+Además de las reglas de acceso, se definen permisos detallados en el archivo `ir.model.access.csv`:
+
+```
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_familia_manager,familia.manager,familia.model_familia,group_familia_manager,1,1,1,1
+access_miembro_familia_manager,miembro_familia.manager,familia.model_familia_miembro,group_familia_manager,1,1,1,1
+access_miembro_familia_admin,miembro_familia.admin,familia.model_familia_miembro,base.group_system,1,1,1,1
+
+```
+- **access_familia_manager**: Permite al grupo `Familia Manager` leer, escribir, crear y eliminar registros en el modelo `familia`.
+- **access_miembro_familia_manager**: Permite al grupo `Familia Manager` leer, escribir, crear y eliminar registros en el modelo `familia.miembro`.
+- **access_miembro_familia_admin**: Permite al grupo de administración (`base.group_system`) realizar todas las operaciones en el modelo `familia.miembro`.
+
+
+## Datos del Módulo
+
+- **Nombre**: Familia
+- **Versión**: 1.0
+- **Resumen**: Gestiona clientes como familias y miembros de la familia.
+- **Autor**: JB Talens
+- **Categoría**: Sales
+- **Imágenes**: 
+- **Dependencias**: `base`, `contacts`, `saldo_favor`
+- **Datos incluidos**:
+  - `security/familia_security.xml`
+  - `security/ir.model.access.csv`
+  - `views/familia_views.xml`
+  - `views/miembro_familia_views.xml`
+  - `views/familia_menu.xml`
+- **Instalable**: True
+- **Aplicación**: True
+- **Auto Instalación**: False
+
+## Contribuciones
+
+Las contribuciones son bienvenidas. Si tienes ideas para mejoras, sugerencias o encuentras errores, por favor, abre un `issue` o envía un `pull request` en GitHub.
