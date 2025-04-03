@@ -1,4 +1,7 @@
-from odoo import models, fields
+from odoo import models, fields, api
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class ResPartnerFaller(models.Model):
     _inherit = 'res.partner'
@@ -37,3 +40,29 @@ class ResPartnerFaller(models.Model):
     comentari = fields.Text(string='Comentari')
     antiguitat_previa = fields.Integer(string='AntiguitatPrevia')
     n_comissions = fields.Integer(string='NComissions')
+
+    @api.model
+    def crear_membres_familia_des_de_numero(self):
+        for partner in self.search([('numero_familia', '!=', False)]):
+            # Buscar o crear la família corresponent
+            familia = self.env['familia.familia'].search([
+                ('numero_familia', '=', partner.numero_familia)
+            ], limit=1)
+
+            if not familia:
+                familia = self.env['familia.familia'].create({
+                    'name': f"Família {partner.numero_familia}",
+                    'numero_familia': partner.numero_familia,
+                })
+                _logger.info(f"Creada família {familia.name} amb número {familia.numero_familia}")
+
+            # Verificar que no estiga ja associat
+            existeix = self.env['familia.miembro'].search([
+                ('partner_id', '=', partner.id)
+            ])
+            if not existeix:
+                self.env['familia.miembro'].create({
+                    'partner_id': partner.id,
+                    'familia_id': familia.id,
+                })
+                _logger.info(f"Afegit {partner.name} a la família {familia.numero_familia}")
