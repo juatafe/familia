@@ -8,11 +8,11 @@
                 <page string="Informació Fallera">
                     <group>
                         <field name="codifaller"/>
-                        <field name="dni"/>
+                        <field name="vat"/>
                         <field name="data_naixement"/>
                         <field name="sexe"/>
-                        <field name="telefon"/>
-                        <field name="telefon_mobil"/>
+                        <field name="phone"/>
+                        <field name="mobile"/>
                         <field name="email"/>
                         <field name="provincia"/>
                         <field name="codi_postal_personalitzat"/>

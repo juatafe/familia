@@ -3,29 +3,29 @@ from odoo import models, fields
 class ResPartnerFaller(models.Model):
     _inherit = 'res.partner'
 
-    codifaller = fields.Integer(string='Codi Faller')
-    dni = fields.Char(string='DNI')
-    nom_faller = fields.Char(string='Nom')  # Alternativa si vols separar
-    cognoms_faller = fields.Char(string='Cognoms')
-    street = fields.Char(string='Adreça')  # Ja existeix en res.partner
-    city = fields.Char(string='Població')  # Ja existeix en res.partner
-    zip = fields.Char(string='Codi Postal')  # Ja existeix en res.partner
-    provincia = fields.Char(string='Província')
-    telefon = fields.Char(string='Telèfon fix')
-    telefon_mobil = fields.Char(string='Telèfon mòbil')
-    email = fields.Char(string='Correu electrònic')  # Ja existeix en res.partner
+    codifaller = fields.Integer(string='CodFaller')  # Coincideix amb l'Excel
+    vat = fields.Char(string='DNI')  # Perquè el camp fiscal reconega 'DNI'
+    nom_faller = fields.Char(string='Nombre')
+    cognoms_faller = fields.Char(string='Apellidos')
+    street = fields.Char(string='Direccion')  # Ja existeix, però sobreescrivim l'etiqueta
+    city = fields.Char(string='Poblacion')
+    zip = fields.Char(string='CP')
+    provincia = fields.Char(string='Provincia')
+    phone = fields.Char(string='Telefono')  # Etiqueta Excel per telèfon fix
+    mobile = fields.Char(string='TMovil')   # Etiqueta Excel per mòbil
+    email = fields.Char(string='MAIL')
 
-    data_naixement = fields.Date(string='Data de Naixement')
+    data_naixement = fields.Date(string='FechaNacimiento')
     sexe = fields.Selection([
         ('home', 'Home'),
         ('dona', 'Dona'),
-    ], string='Home/Dona')
+    ], string='HomeDona')
 
-    codi_postal_personalitzat = fields.Char(string='CodiP')  # Si diferent de zip
-    alta = fields.Boolean(string='Alta activa?')
-    data_alta = fields.Date(string='Data d\'Alta')
-    data_baixa = fields.Date(string='Data de Baixa')
-    numero_familia = fields.Char(string='Nº Família')  # Textual, si no és ID relacionat
+    codi_postal_personalitzat = fields.Char(string='CodiP')
+    alta = fields.Boolean(string='Alta')
+    data_alta = fields.Date(string='FechaAlta')
+    data_baixa = fields.Date(string='FechaBaja')
+    numero_familia = fields.Char(string='NºFamilia')
 
     es_regina_major = fields.Boolean(string='Regina Major')
     fallera_major_infantil = fields.Boolean(string='Fallera Major Infantil')
@@ -33,7 +33,7 @@ class ResPartnerFaller(models.Model):
     regina_o_major = fields.Boolean(string='Regina/o Major')
     regina_o_infantil = fields.Boolean(string='Regina/o Infantil')
 
-    baremacio = fields.Boolean(string='Baremat')
+    baremacio = fields.Boolean(string='Baremacio')
     comentari = fields.Text(string='Comentari')
-    antiguitat_previa = fields.Integer(string='Antiguitat Prèvia')
-    n_comissions = fields.Integer(string='Nombre de Comissions')
+    antiguitat_previa = fields.Integer(string='AntiguitatPrevia')
+    n_comissions = fields.Integer(string='NComissions')
