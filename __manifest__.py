@@ -12,6 +12,7 @@
         'views/familia_views.xml',
         'views/miembro_familia_views.xml',
         'views/familia_menu.xml',
+        'views/res_partner_faller_view.xml',
     ],
     'installable': True,
     'application': True,

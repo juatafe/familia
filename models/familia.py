@@ -1,7 +1,7 @@
 from odoo import models, fields
 
 class Familia(models.Model):
-    _name = 'familia'
+    _name = 'familia.familia'
     _description = 'Familia'
 
     name = fields.Char(string='Nombre', required=True)

@@ -9,7 +9,7 @@ class MiembroFamilia(models.Model):
     _description = 'Miembro de la Familia'
 
     partner_id = fields.Many2one('res.partner', string='Cliente', required=True)
-    familia_id = fields.Many2one('familia', string='Familia', ondelete='cascade', required=True)
+    familia_id = fields.Many2one('familia.familia', string='Familia', ondelete='cascade', required=True)
     saldo = fields.Float(string='Saldo', readonly=True, compute='_compute_saldo', store=True)
     tiene_limite = fields.Boolean(string='Tiene Límite de Gasto', default=False)
     limite_gasto = fields.Float(string='Límite de Gasto')
@@ -30,7 +30,7 @@ class MiembroFamilia(models.Model):
         # Obtener el saldo del nuevo miembro antes de crearlo
         saldo_miembro = self.env['res.partner'].browse(vals['partner_id']).saldo_a_favor
 
-        familia = self.env['familia'].browse(vals['familia_id'])
+        familia = self.env['familia.familia'].browse(vals['familia_id'])
 
         if familia and saldo_miembro:
             # Sumar el saldo del nuevo miembro al saldo total de la familia antes de añadir el miembro
