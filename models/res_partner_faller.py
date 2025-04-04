@@ -3,19 +3,20 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class ResPartnerFaller(models.Model):
     _inherit = 'res.partner'
 
-    codifaller = fields.Integer(string='CodFaller')  # Coincideix amb l'Excel
-    vat = fields.Char(string='DNI')  # Perquè el camp fiscal reconega 'DNI'
+    codifaller = fields.Integer(string='CodFaller')
+    vat = fields.Char(string='DNI')
     nom_faller = fields.Char(string='Nombre')
     cognoms_faller = fields.Char(string='Apellidos')
-    street = fields.Char(string='Direccion')  # Ja existeix, però sobreescrivim l'etiqueta
+    street = fields.Char(string='Direccion')
     city = fields.Char(string='Poblacion')
     zip = fields.Char(string='CP')
     provincia = fields.Char(string='Provincia')
-    phone = fields.Char(string='Telefono')  # Etiqueta Excel per telèfon fix
-    mobile = fields.Char(string='TMovil')   # Etiqueta Excel per mòbil
+    phone = fields.Char(string='Telefono')
+    mobile = fields.Char(string='TMovil')
     email = fields.Char(string='MAIL')
 
     data_naixement = fields.Date(string='FechaNacimiento')
@@ -44,7 +45,6 @@ class ResPartnerFaller(models.Model):
     @api.model
     def crear_membres_familia_des_de_numero(self):
         for partner in self.search([('numero_familia', '!=', False)]):
-            # Buscar o crear la família corresponent
             familia = self.env['familia.familia'].search([
                 ('numero_familia', '=', partner.numero_familia)
             ], limit=1)
@@ -56,7 +56,6 @@ class ResPartnerFaller(models.Model):
                 })
                 _logger.info(f"Creada família {familia.name} amb número {familia.numero_familia}")
 
-            # Verificar que no estiga ja associat
             existeix = self.env['familia.miembro'].search([
                 ('partner_id', '=', partner.id)
             ])
@@ -66,3 +65,55 @@ class ResPartnerFaller(models.Model):
                     'familia_id': familia.id,
                 })
                 _logger.info(f"Afegit {partner.name} a la família {familia.numero_familia}")
+
+    @api.onchange('nom_faller', 'cognoms_faller')
+    def _onchange_nom_cognoms(self):
+        self.name = f"{self.nom_faller or ''} {self.cognoms_faller or ''}".strip()
+
+    def _get_titol_per_defecte(self, sexe, name):
+        vocals = ['A', 'E', 'I', 'O', 'U', 'À', 'È', 'É', 'Í', 'Ó', 'Ò', 'Ú']
+        if name:
+            primera_lletra = name.strip()[0].upper()
+            if primera_lletra in vocals:
+                ref = self.env.ref('familia.res_partner_title_n_apostrof', raise_if_not_found=False)
+            elif sexe == 'home':
+                ref = self.env.ref('familia.res_partner_title_en', raise_if_not_found=False)
+            elif sexe == 'dona':
+                ref = self.env.ref('familia.res_partner_title_na', raise_if_not_found=False)
+            else:
+                ref = False
+
+            _logger.info(f"Calculant títol per sexe={sexe} → {ref.name if ref else 'Cap'}")
+
+            return ref
+
+
+        return False
+
+    @api.onchange('sexe', 'name')
+    def _onchange_sexe_set_title(self):
+        _logger.info(f"ONCHANGE sexe={self.sexe}, name={self.name}")
+        _logger.info(f"Nom complet brut: {self.nom_faller=} {self.cognoms_faller=} | self.name={self.name}")
+        if self.name:
+            title = self._get_titol_per_defecte(self.sexe, self.name)
+            if title:
+                self.title = False
+                self.title = title
+
+    @api.model
+    def create(self, vals):
+        if 'sexe' in vals and 'name' in vals and not vals.get('title'):
+            title = self._get_titol_per_defecte(vals['sexe'], vals['name'])
+            if title:
+                vals['title'] = title.id
+        return super().create(vals)
+
+    def write(self, vals):
+        for record in self:
+            sexe = vals.get('sexe', record.sexe)
+            name = vals.get('name', record.name)
+            if (('sexe' in vals or 'name' in vals) and not vals.get('title')):
+                title = self._get_titol_per_defecte(sexe, name)
+                if title:
+                    vals['title'] = title.id
+        return super().write(vals)

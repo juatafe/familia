@@ -4,24 +4,26 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+
+            <!-- Inserta una nova pestanya després de 'internal_notes' -->
             <xpath expr="//page[@name='internal_notes']" position="after">
                 <page string="Informació Fallera">
                     <group>
-                        <field name="codifaller"/>
+                        <field name="codifaller" string="Codi"/>
                         <field name="vat"/>
-                        <field name="data_naixement"/>
-                        <field name="sexe"/>
+                        <field name="data_naixement" string="Data de Naixement"/>
+                        <field name="sexe" string="Sexe"/>
                         <field name="phone"/>
                         <field name="mobile"/>
                         <field name="email"/>
-                        <field name="provincia"/>
+                        <field name="provincia" string="Província"/>
                         <field name="codi_postal_personalitzat"/>
                     </group>
                     <group string="Alta i Família">
                         <field name="alta"/>
-                        <field name="data_alta"/>
-                        <field name="data_baixa"/>
-                        <field name="numero_familia"/>
+                        <field name="data_alta" string="Data d'alta"/>
+                        <field name="data_baixa" string="Data de baixa"/>
+                        <field name="numero_familia" string="Identificador de família"/>
                     </group>
                     <group string="Càrrecs">
                         <field name="es_regina_major"/>
@@ -31,13 +33,21 @@
                         <field name="regina_o_infantil"/>
                     </group>
                     <group string="Historial">
-                        <field name="antiguitat_previa"/>
-                        <field name="n_comissions"/>
-                        <field name="baremacio"/>
-                        <field name="comentari"/>
+                        <field name="antiguitat_previa" string="Antiguitat prèvia"/>
+                        <field name="n_comissions" string="Nombre de comissions"/>
+                        <field name="baremacio" string="S'ha baremat?"/>
+                        <field name="comentari" string="Altres dades o comentaris"/>
                     </group>
                 </page>
             </xpath>
+
+            <!-- Substituir el camp 'function' per eliminar-lo del formulari -->
+            <xpath expr="//field[@name='function']" position="replace"/>
+            <xpath expr="//field[@name='website']" position="replace"/>
+            <xpath expr="//field[@name='title']" position="attributes">
+                 <attribute name="domain">[('name', 'in', ['En', 'Na', "N'"])]</attribute>
+            </xpath>
+
         </field>
     </record>
 </odoo>
