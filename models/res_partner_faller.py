@@ -41,6 +41,28 @@ class ResPartnerFaller(models.Model):
     comentari = fields.Text(string='Comentari')
     antiguitat_previa = fields.Integer(string='AntiguitatPrevia')
     n_comissions = fields.Integer(string='NComissions')
+    # display_name_with_title = fields.Char(
+    #     string="Nom complet amb títol",
+    #     compute="_compute_display_name_with_title",
+    #     store=True,
+    # )
+
+    # @api.depends('title', 'name')
+    # def _compute_display_name_with_title(self):
+    #     for rec in self:
+    #         title = rec.title.name if rec.title else ''
+    #         rec.display_name_with_title = (title + ' ' + rec.name).strip()
+    display_name_with_title = fields.Char(
+        string="Nom amb títol",
+        compute="_compute_display_name_with_title",
+        store=True,
+    )
+
+    @api.depends('title', 'name')
+    def _compute_display_name_with_title(self):
+        for rec in self:
+            title = rec.title.name if rec.title else ''
+            rec.display_name_with_title = (title + ' ' + rec.name).strip()
 
     @api.model
     def crear_membres_familia_des_de_numero(self):

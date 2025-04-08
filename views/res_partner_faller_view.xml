@@ -1,53 +1,77 @@
 <odoo>
-    <record id="view_res_partner_faller_form" model="ir.ui.view">
-        <field name="name">res.partner.faller.form</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_form"/>
-        <field name="arch" type="xml">
+  <record id="view_res_partner_faller_form" model="ir.ui.view">
+    <field name="name">res.partner.faller.form</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="arch" type="xml">
 
-            <!-- Inserta una nova pestanya després de 'internal_notes' -->
-            <xpath expr="//page[@name='internal_notes']" position="after">
-                <page string="Informació Fallera">
-                    <group>
-                        <field name="codifaller" string="Codi"/>
-                        <field name="vat"/>
-                        <field name="data_naixement" string="Data de Naixement"/>
-                        <field name="sexe" string="Sexe"/>
-                        <field name="phone"/>
-                        <field name="mobile"/>
-                        <field name="email"/>
-                        <field name="provincia" string="Província"/>
-                        <field name="codi_postal_personalitzat"/>
-                    </group>
-                    <group string="Alta i Família">
-                        <field name="alta"/>
-                        <field name="data_alta" string="Data d'alta"/>
-                        <field name="data_baixa" string="Data de baixa"/>
-                        <field name="numero_familia" string="Identificador de família"/>
-                    </group>
-                    <group string="Càrrecs">
-                        <field name="es_regina_major"/>
-                        <field name="fallera_major_infantil"/>
-                        <field name="regina_infantil"/>
-                        <field name="regina_o_major"/>
-                        <field name="regina_o_infantil"/>
-                    </group>
-                    <group string="Historial">
-                        <field name="antiguitat_previa" string="Antiguitat prèvia"/>
-                        <field name="n_comissions" string="Nombre de comissions"/>
-                        <field name="baremacio" string="S'ha baremat?"/>
-                        <field name="comentari" string="Altres dades o comentaris"/>
-                    </group>
-                </page>
-            </xpath>
+      <!-- ✅ Mostrar només el títol + nom com a decoració al principi -->
+    <xpath expr="//field[@name='name']" position="replace">
+      <field name="display_name_with_title" readonly="1" class="oe_title"/>
+    </xpath>
 
-            <!-- Substituir el camp 'function' per eliminar-lo del formulari -->
-            <xpath expr="//field[@name='function']" position="replace"/>
-            <xpath expr="//field[@name='website']" position="replace"/>
-            <xpath expr="//field[@name='title']" position="attributes">
-                 <attribute name="domain">[('name', 'in', ['En', 'Na', "N'"])]</attribute>
-            </xpath>
+<xpath expr="//field[@name='name']" position="attributes">
+    <attribute name="attrs">{'invisible': True}</attribute>
+</xpath>
 
-        </field>
-    </record>
+
+
+      <!-- ✅ No toques el `name`: que es quede al seu lloc -->
+      <!-- ❌ No cal substituir cap <field name="name"/> -->
+
+      <!-- 🧼 Oculta el camp `title`, perquè ja es mostra combinat -->
+      <xpath expr="//field[@name='title']" position="attributes">
+        <attribute name="attrs">{'invisible': True}</attribute>
+      </xpath>
+
+      <!-- 🧹 Altres ocultacions i pestanya personalitzada -->
+      <xpath expr="//field[@name='category_id']" position="replace"/>
+      <xpath expr="//field[@name='function']" position="replace"/>
+      <xpath expr="//field[@name='website']" position="replace"/>
+      <xpath expr="//field[@name='parent_id']" position="attributes">
+        <attribute name="attrs">{'invisible': [('company_type', '=', 'person')]}</attribute>
+      </xpath>
+      <xpath expr="//field[@name='street2']" position="attributes">
+        <attribute name="attrs">{'invisible': True}</attribute>
+      </xpath>
+
+      <!-- 📑 Pestaña Informació Fallera -->
+      <xpath expr="//page[@name='internal_notes']" position="after">
+        <page string="Informació Fallera">
+          <group>
+            <field name="title" help="Es mostra al costat del nom principal"/>
+            <field name="name" attrs="{'invisible': [('title', '=', False)]}"/>
+            <field name="codifaller"/>
+            <field name="vat"/>
+            <field name="data_naixement"/>
+            <field name="sexe"/>
+            <field name="phone"/>
+            <field name="mobile"/>
+            <field name="email"/>
+            <field name="provincia"/>
+            <field name="codi_postal_personalitzat"/>
+          </group>
+          <group string="Alta i Família">
+            <field name="alta"/>
+            <field name="data_alta"/>
+            <field name="data_baixa"/>
+            <field name="numero_familia"/>
+          </group>
+          <group string="Càrrecs">
+            <field name="es_regina_major"/>
+            <field name="fallera_major_infantil"/>
+            <field name="regina_infantil"/>
+            <field name="regina_o_major"/>
+            <field name="regina_o_infantil"/>
+          </group>
+          <group string="Historial">
+            <field name="antiguitat_previa"/>
+            <field name="n_comissions"/>
+            <field name="baremacio"/>
+          </group>
+        </page>
+      </xpath>
+
+    </field>
+  </record>
 </odoo>
