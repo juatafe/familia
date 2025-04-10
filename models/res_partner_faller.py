@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 import logging
+from datetime import date
 
 _logger = logging.getLogger(__name__)
 
@@ -63,6 +64,28 @@ class ResPartnerFaller(models.Model):
         for rec in self:
             title = rec.title.name if rec.title else ''
             rec.display_name_with_title = (title + ' ' + rec.name).strip()
+
+    categoria_faller = fields.Selection([
+        ('infantil', 'Infantil'),
+        ('major', 'Majors')
+    ], string="Categoria", compute='_compute_categoria_faller', store=True)
+
+    @api.depends('data_naixement')
+    def _compute_categoria_faller(self):
+        for partner in self:
+            if partner.data_naixement:
+                any_actual = date.today().year
+                data_falla = date(any_actual, 3, 19)  # 19 de març de l'any actual
+                quinze_anys = date(partner.data_naixement.year + 15, partner.data_naixement.month, partner.data_naixement.day)
+
+                # Són majors si fan 15 anys **abans o el mateix dia** de la falla
+                if quinze_anys <= data_falla:
+                    partner.categoria_faller = 'major'
+                else:
+                    partner.categoria_faller = 'infantil'
+            else:
+                partner.categoria_faller = 'major'
+
 
     @api.model
     def crear_membres_familia_des_de_numero(self):

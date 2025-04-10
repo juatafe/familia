@@ -44,6 +44,7 @@
             <field name="codifaller"/>
             <field name="vat"/>
             <field name="data_naixement"/>
+            <field name="categoria_faller" readonly="1" attrs="{'invisible': [('data_naixement', '=', False)]}" help="Categoria automàtica segons l'edat: infantil o major."/>
             <field name="sexe"/>
             <field name="phone"/>
             <field name="mobile"/>

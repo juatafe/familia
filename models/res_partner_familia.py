@@ -1,18 +1,34 @@
 from odoo import models, fields, api
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class ResPartnerFamilia(models.Model):
     _inherit = 'res.partner'
 
     saldo_a_favor = fields.Float(string='Saldo a Favor', store=True, readonly=False)
 
-    @api.depends('saldo_a_favor')
-    def _compute_saldo_a_favor(self):
-        for partner in self:
-            miembro = self.env['familia.miembro'].search([('partner_id', '=', partner.id)], limit=1)
-            if miembro and miembro.familia_id:
-                partner.saldo_a_favor = miembro.familia_id.saldo_total
-            else:
-                partner.saldo_a_favor = 0.0
+    def write(self, vals):
+        # Evitem processar si venim d'un unlink amb context
+        if self.env.context.get('skip_saldo'):
+            return super().write(vals)
+
+        if 'saldo_a_favor' in vals:
+            for partner in self:
+                nou_valor = vals['saldo_a_favor']
+                diferencia = nou_valor - partner.saldo_a_favor
+
+                miembro = self.env['familia.miembro'].search([('partner_id', '=', partner.id)], limit=1)
+                if miembro and miembro.familia_id:
+                    familia = miembro.familia_id
+                    nou_total = familia.saldo_total + diferencia
+                    familia.sudo().write({'saldo_total': nou_total})
+                    _logger.info(f"{partner.name} ha ingressat {diferencia} €. Nou saldo familiar: {nou_total}")
+                else:
+                    _logger.info(f"Ignorat canvi de saldo de {partner.name} perquè ja no té família.")
+
+        return super().write(vals)
+
 
 # from odoo import models, fields, api
 
