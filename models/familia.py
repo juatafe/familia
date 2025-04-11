@@ -1,4 +1,7 @@
 from odoo import models, fields, api
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class Familia(models.Model):
     _name = 'familia.familia'
@@ -15,3 +18,9 @@ class Familia(models.Model):
         ('numero_familia_unique', 'unique(numero_familia)', 'El número de familia debe ser único.')
     ]
 
+    def actualitzar_saldo_membres(self):
+        for familia in self:
+            for membre in familia.miembros_ids:
+                partner = membre.partner_id
+                partner.sudo().with_context(from_familia_sync=True).write({'saldo_a_favor': familia.saldo_total})
+                _logger.info(f"S'ha actualitzat el saldo de {partner.name} a {familia.saldo_total} €.")
