@@ -217,3 +217,36 @@ class ResPartnerFaller(models.Model):
                 if title:
                     vals['title'] = title.id
         return super().write(vals)
+
+
+    @api.model
+    def vincular_familia_i_assignar_portal(self):
+        self.crear_membres_familia_des_de_numero()
+        self.search([('alta', '=', True)]).assignar_acces_portal()
+        return True
+
+
+    def assignar_acces_portal(self, contrasenya_per_defecte='Pa$$w0rd'):
+        portal_group = self.env.ref('base.group_portal')
+        User = self.env['res.users']
+
+        for partner in self:
+            if not partner.email:
+                _logger.warning(f"{partner.name} no té email. No es pot crear usuari.")
+                continue
+
+            usuari_existent = User.search([('login', '=', partner.email)], limit=1)
+            if usuari_existent:
+                _logger.info(f"Usuari ja existent per a {partner.name} ({partner.email})")
+                continue
+
+            nou_usuari = User.create({
+                'name': partner.name,
+                'login': partner.email,
+                'email': partner.email,
+                'partner_id': partner.id,
+                'groups_id': [(6, 0, [portal_group.id])],
+                'password': contrasenya_per_defecte,
+            })
+            _logger.info(f"Creat usuari portal per a {partner.name} amb email {partner.email}")
+
