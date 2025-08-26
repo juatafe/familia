@@ -5,12 +5,12 @@
             name="Portal Home - Customizations">
 
     <!-- (A) Canviar “Documents” per “Reserves i comandes” -->
-    <xpath expr="//div[contains(@class, 'o_portal_my_home')]/h3" position="replace">
+    <xpath expr="//div[hasclass('o_portal_my_home')]/h3" position="replace">
       <h3>📦 Reserves i comandes</h3>
     </xpath>
 
     <!-- (B) Targeta amb nom + codi (abans del títol) -->
-    <xpath expr="//div[contains(@class, 'o_portal_my_home')]/h3" position="before">
+    <xpath expr="//div[hasclass('o_portal_my_home')]/h3" position="before">
       <t t-set="partner" t-value="request.env.user.partner_id"/>
       <t t-set="code" t-value="partner.barcode_ean13 or partner.barcode or (partner.codifaller and str(partner.codifaller))"/>
       <t t-if="code">
@@ -30,7 +30,7 @@
     </xpath>
 
     <!-- (C) Convertir el bloc de detalls del perfil en <details> col·lapsable -->
-    <xpath expr="//div[contains(@class, 'o_portal_my_home')]" position="inside">
+    <xpath expr="//div[hasclass('o_portal_my_home')]/h3" position="inside">
       <t t-javascript="true">
         <script type="text/javascript"><![CDATA[
           document.addEventListener('DOMContentLoaded', function () {

@@ -56,7 +56,7 @@ def apply_translation_fixes_env(env):
     _force_view_tr(env, "sale.portal_my_orders", "Quotation Date", "Data de reserva")
     _force_view_tr(env, "sale.portal_my_orders", "Order #", "Reserva #")
     _force_view_tr(env, "sale.portal_my_orders", "Order Date", "Data de reserva")
-    _force_view_tr(env, "sale.portal_my_home",   "Quotations", "Reserves")
+    _force_view_tr(env, "portal.portal_my_home",   "Quotations", "Reserves")
     _force_view_tr(env, "sale.portal_my_orders", "My Quotations", "Les meues reserves")
     # neteja cau
     env["ir.http"].clear_caches()
