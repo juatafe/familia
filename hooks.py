@@ -1,75 +1,65 @@
 # familia/hooks.py
-import logging
 from odoo import api, SUPERUSER_ID
+import logging
 
 _logger = logging.getLogger(__name__)
 
-LANGS = ["ca", "ca_ES", "ca_ES@valencia"]
-REPLACEMENTS = [
-    ("Pressupostos", "Reserves"),
-    ("Pressuposts", "Reserves"),
-    ("Els meus pressupostos", "Les meues reserves"),
-    ("Pressupost #", "Reserva #"),
-    ("Data de pressupost", "Data de reserva"),
-    ("Pressupost", "Reserva"),
-]
+def _replace_any_pressupost_sql(cr, lang='ca'):
+    # Canvis massius: Pressupost(s) -> Reserva(es)
+    cr.execute("""
+        UPDATE ir_translation
+           SET value = regexp_replace(
+                 regexp_replace(value, 'Pressupostos|Pressuposts', 'Reserves', 'gi'),
+                 'Pressupost', 'Reserva', 'gi'
+               )
+         WHERE lang = %s
+           AND value ILIKE %s
+    """, (lang, '%Pressupost%'))
+    return cr.rowcount
 
-def _force_view_tr(env, xmlid, src, dst):
-    name = f"model_terms:ir.ui.view,arch_db:{xmlid}"
-    T = env["ir.translation"]
-    for lang in LANGS:
-        rec = T.search([("lang", "=", lang), ("name", "=", name), ("src", "=", src)], limit=1)
-        if rec:
-            if rec.value != dst:
-                _logger.info(f"[familia] Update tr: {lang} {xmlid} :: {src!r} -> {dst!r}")
-                rec.write({"value": dst, "state": "translated"})
-        else:
-            _logger.info(f"[familia] Create tr: {lang} {xmlid} :: {src!r} -> {dst!r}")
-            T.create({
-                "name": name, "lang": lang, "src": src, "type": "model_terms",
-                "value": dst, "state": "translated",
-            })
+def _upsert_model_terms_sql(cr, xmlid, src, val, lang='ca'):
+    # Necessitem el res_id (id de la vista) per a model_terms
+    module, name = xmlid.split('.', 1)
+    cr.execute("SELECT res_id FROM ir_model_data WHERE module=%s AND name=%s", (module, name))
+    row = cr.fetchone()
+    if not row:
+        return 0
+    res_id = row[0]
+    name_key = f"model_terms:ir.ui.view,arch_db:{xmlid}"
 
-def _replace_any_pressupost(env):
-    T = env["ir.translation"]
-    total = 0
-    for lang in LANGS:
-        rows = T.search([("lang", "=", lang), ("value", "ilike", "%Pressupost%")])
-        _logger.info(f"[familia] {len(rows)} traduccions trobades amb 'Pressupost' (lang={lang})")
-        for tr in rows:
-            v = tr.value or ""
-            v2 = v
-            for src, dst in REPLACEMENTS:
-                v2 = v2.replace(src, dst)
-            if v2 != v:
-                tr.write({"value": v2, "state": "translated"})
-                total += 1
-                _logger.info(f"[familia] {lang} {tr.name}: {v!r} -> {v2!r}")
-    return total
+    # Intenta UPDATE
+    cr.execute("""
+        UPDATE ir_translation
+           SET value=%s, state='translated'
+         WHERE lang=%s AND name=%s AND src=%s AND res_id=%s
+         RETURNING id
+    """, (val, lang, name_key, src, res_id))
+    if cr.fetchone():
+        return 1
 
-def apply_translation_fixes_env(env):
-    """Crida açò des del shell amb l'`env` existent."""
-    _logger.info("[familia] Inici apply_translation_fixes_env()")
-    n = _replace_any_pressupost(env)
-    _force_view_tr(env, "sale.portal_my_orders", "Quotations", "Reserves")
-    _force_view_tr(env, "sale.portal_my_orders", "Quotation #", "Reserva #")
-    _force_view_tr(env, "sale.portal_my_orders", "Quotation Date", "Data de reserva")
-    _force_view_tr(env, "sale.portal_my_orders", "Order #", "Reserva #")
-    _force_view_tr(env, "sale.portal_my_orders", "Order Date", "Data de reserva")
-    _force_view_tr(env, "portal.portal_my_home",   "Quotations", "Reserves")
-    _force_view_tr(env, "sale.portal_my_orders", "My Quotations", "Les meues reserves")
-    # neteja cau
-    env["ir.http"].clear_caches()
-    env["ir.qweb"]._clear_caches()
-    for w in env["website"].search([]):
-        try:
-            w.clear_caches()
-        except Exception as e:
-            _logger.warning(f"[familia] Error netejant cache website {w.id}: {e}")
-    _logger.info(f"[familia] Fi apply_translation_fixes_env(). Canvis: {n}")
-    return n
+    # Si no existeix, INSERT
+    cr.execute("""
+        INSERT INTO ir_translation (name, lang, type, src, value, state, res_id)
+        VALUES (%s, %s, 'model_terms', %s, %s, 'translated', %s)
+        ON CONFLICT DO NOTHING
+    """, (name_key, lang, src, val, res_id))
+    return 1
 
 def post_init_hook(cr, registry):
-    """Per a install/upgrade real del mòdul."""
-    env = api.Environment(cr, SUPERUSER_ID, {})
-    apply_translation_fixes_env(env)
+    _logger.info("[familia] post_init_hook: aplicant correccions de traducció via SQL")
+
+    # 1) Canvis genèrics Pressupost -> Reserva en ca
+    _replace_any_pressupost_sql(cr, lang='ca')
+
+    # 2) Forçar literals del portal (vistes de sale)
+    fixes = [
+        ('sale.portal_my_orders', 'Quotations',      'Reserves'),
+        ('sale.portal_my_orders', 'Quotation #',     'Reserva #'),
+        ('sale.portal_my_orders', 'Quotation Date',  'Data de reserva'),
+        ('sale.portal_my_orders', 'My Quotations',   'Les meues reserves'),
+        ('sale.portal_my_home',   'Quotations',      'Reserves'),
+    ]
+    for args in fixes:
+        _upsert_model_terms_sql(cr, *args, lang='ca')
+
+    # 3) No cal netejar caches ací: el servidor es reinicia en este punt
