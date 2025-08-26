@@ -1,0 +1,50 @@
+<odoo>
+  <data>
+
+    <!-- /my/orders -->
+    <template id="portal_my_orders_inherit_reserves"
+              inherit_id="sale.portal_my_orders"
+              name="Orders headers → Comanda"
+              priority="20">
+      <xpath expr="//th[1]" position="replace">
+        <th>Comanda #</th>
+      </xpath>
+      <xpath expr="//th[2]" position="replace">
+        <th class="text-center">Data de comanda</th>
+      </xpath>
+    </template>
+
+    <!-- /my/quotes -->
+    <template id="portal_my_quotations_inherit_reserves"
+              inherit_id="sale.portal_my_quotations"
+              name="Quotations headers → Reserva"
+              priority="20">
+      <xpath expr="//th[1]" position="replace">
+        <th>Reserva #</th>
+      </xpath>
+      <xpath expr="//th[2]" position="replace">
+        <th class="text-center">Data de reserva</th>
+      </xpath>
+    </template>
+
+    <!-- /my/quotes : breadcrumb/títol -->
+
+<template id="portal_my_quotations_hide_default_breadcrumb"
+          inherit_id="portal.portal_breadcrumbs"
+          name="Hide default 'Pressupostos' on /my/quotes"
+          priority="26">
+  <xpath expr="//ol[hasclass('o_portal_submenu','breadcrumb','mb-0','py-2','flex-grow-1')]/li[last()]"
+         position="replace">
+    <li class="breadcrumb-item active">
+      <t t-if="'/my/quotes' in request.httprequest.path">
+        Reserves
+      </t>
+      <t t-else="">
+        <t t-esc="page_name"/>
+      </t>
+    </li>
+  </xpath>
+</template>
+
+  </data>
+</odoo>

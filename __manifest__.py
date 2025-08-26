@@ -1,11 +1,11 @@
 {
     'name': 'Familia',
-    'version': '1.0',
+    'version': '1.0.1',
     'summary': 'Gestiona clientes como familias y miembros de la familia.',
     'author': 'JB Talens',
     'category': 'Sales',
     'images': ['static/description/icon.png'],
-    'depends': ['base', 'contacts', 'saldo_favor'],
+    'depends': ['base', 'contacts', 'saldo_favor','sale', 'portal', 'website'],
     'data': [
         'security/familia_security.xml',
         'security/ir.model.access.csv',
@@ -15,9 +15,17 @@
         'views/res_partner_faller_view.xml',
         'views/partner_server_action.xml',
         'data/partner_titles.xml',
+        'views/portal_reserves.xml', 
+        'views/portal_my_home_barcode.xml',
+        'data/rename_sale_menu.xml',
+
+
     ],
     'installable': True,
     'application': True,
-    'auto_install': True,
+    'auto_install': False,
     'license': 'LGPL-3',
+    'post_load': None,
+    'pre_init_hook': None,
+    'post_init_hook': 'post_init_hook',
 }

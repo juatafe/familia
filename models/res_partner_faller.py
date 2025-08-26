@@ -1,6 +1,8 @@
 from odoo import models, fields, api
 import logging
 from datetime import date
+import re 
+
 
 _logger = logging.getLogger(__name__)
 
@@ -250,3 +252,27 @@ class ResPartnerFaller(models.Model):
             })
             _logger.info(f"Creat usuari portal per a {partner.name} amb email {partner.email}")
 
+    # ... (tots els teus camps tal com estan) ...
+
+    # ✅ Nou camp: EAN-13 calculat a partir de barcode o codifaller
+    barcode_ean13 = fields.Char(
+        string='EAN13',
+        compute='_compute_barcode_ean13',
+        store=True,
+    )
+
+    @api.depends('barcode', 'codifaller')
+    def _compute_barcode_ean13(self):
+        for p in self:
+            raw = (p.barcode or str(p.codifaller or '')).strip()
+            base = re.sub(r'\D', '', raw)  # només dígits
+
+            if len(base) == 13:
+                # ja és EAN13
+                p.barcode_ean13 = base
+            elif len(base) == 12:
+                digits = [int(d) for d in base]
+                checksum = (10 - ((sum(digits[::2]) + 3 * sum(digits[1::2])) % 10)) % 10
+                p.barcode_ean13 = base + str(checksum)
+            else:
+                p.barcode_ean13 = False

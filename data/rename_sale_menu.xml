@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Elimina completament l'element que no existeix -->
+        <!-- <record id="sale.menu_sale_quotations_root" model="ir.ui.menu">
+            <field name="name">Reserves</field>
+        </record> -->
+        
+        <!-- Mantén només els elements que existeixen -->
+        <record id="sale.menu_sale_quotations" model="ir.ui.menu">
+            <field name="name">Reserves</field>
+        </record>
+    </data>
+</odoo>

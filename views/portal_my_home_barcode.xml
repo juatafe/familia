@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="portal_my_home_customizations"
+            inherit_id="portal.portal_my_home"
+            name="Portal Home - Customizations">
+
+    <!-- (A) Canviar “Documents” per “Reserves i comandes” -->
+    <xpath expr="//div[contains(@class, 'o_portal_my_home')]/h3" position="replace">
+      <h3>📦 Reserves i comandes</h3>
+    </xpath>
+
+    <!-- (B) Targeta amb nom + codi (abans del títol) -->
+    <xpath expr="//div[contains(@class, 'o_portal_my_home')]/h3" position="before">
+      <t t-set="partner" t-value="request.env.user.partner_id"/>
+      <t t-set="code" t-value="partner.barcode_ean13 or partner.barcode or (partner.codifaller and str(partner.codifaller))"/>
+      <t t-if="code">
+        <div class="card shadow-sm mb-3">
+          <div class="card-body d-flex flex-column align-items-center text-center">
+            <h5 class="mb-2"><t t-esc="partner.name"/></h5>
+            <div style="display:flex; justify-content:center; width:100%;">
+              <div style="max-width:300px; width:100%; overflow:hidden;">
+                <t t-esc="code"
+                   t-options="{'widget': 'barcode', 'barcode_type': 'EAN13', 'width': 300, 'height': 120}"/>
+              </div>
+            </div>
+            <div class="mt-2 h4"><t t-esc="code"/></div>
+          </div>
+        </div>
+      </t>
+    </xpath>
+
+    <!-- (C) Convertir el bloc de detalls del perfil en <details> col·lapsable -->
+    <xpath expr="//div[contains(@class, 'o_portal_my_home')]" position="inside">
+      <t t-javascript="true">
+        <script type="text/javascript"><![CDATA[
+          document.addEventListener('DOMContentLoaded', function () {
+            // 1) Transformar el bloc d'informació personal en <details>
+            const detalls = document.querySelector('.o_portal_my_details');
+            if (detalls) {
+              const details = document.createElement('details');
+              const summary = document.createElement('summary');
+              summary.innerText = '👥 Informació personal'; // icona unisex
+              summary.className = 'card-header h5 mb-0 text-primary';
+              details.className = 'card mb-4';
+              details.appendChild(summary);
+
+              const cloned = detalls.cloneNode(true);
+              details.appendChild(cloned);
+              detalls.replaceWith(details);
+            }
+
+            // 2) Canviar "Pressupostos" -> "📅 Reserves" a l'enllaç /my/quotes
+            const quotesA = document.querySelector("a[href='/my/quotes']");
+            if (quotesA) {
+              let changedText = false;
+              quotesA.childNodes.forEach(n => {
+                if (n.nodeType === Node.TEXT_NODE && n.nodeValue.trim()) {
+                  n.nodeValue = "📅 Reserves ";
+                  changedText = true;
+                }
+              });
+              if (!changedText) {
+                quotesA.insertBefore(document.createTextNode("📅 Reserves "), quotesA.firstChild);
+              }
+              quotesA.setAttribute('title', 'Reserves');
+            }
+
+            // 3) Arreglar text “Factures i amp; Factures” -> “🧾 Rebuts”
+            const invoicesA = document.querySelector("a[href='/my/invoices']");
+            if (invoicesA) {
+              invoicesA.childNodes.forEach(n => {
+                if (n.nodeType === Node.TEXT_NODE && n.nodeValue.trim()) {
+                  n.nodeValue = "🧾 Rebuts ";
+                }
+              });
+              invoicesA.setAttribute('title', 'Rebuts');
+            }
+
+            // 4) Comandes de venda -> Comandes
+            const ordersA = document.querySelector("a[href='/my/orders']");
+            if (ordersA) {
+              ordersA.childNodes.forEach(n => {
+                if (n.nodeType === Node.TEXT_NODE && n.nodeValue.trim()) {
+                  n.nodeValue = "🛒 Comandes ";
+                }
+              });
+              ordersA.setAttribute('title', 'Comandes');
+            }
+          });
+        ]]></script>
+      </t>
+    </xpath>
+
+  </template>
+</odoo>
