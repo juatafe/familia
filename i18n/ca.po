@@ -1073,8 +1073,8 @@ msgid ""
 "                Send these quotes by email and let your customers sign online.\n"
 "                Use cross-selling and discounts to push and boost your sales."
 msgstr ""
-"Utilitza plantilles per crear registreos professionals, i polits en minuts.\n"
-"Envia aquests registreos per correu electrònic i permet als teus clients signar-los en línia. \n"
+"Utilitza plantilles per crear registres professionals, i polits en minuts.\n"
+"Envia aquests registres per correu electrònic i permet als teus clients signar-los en línia. \n"
 "Utilitzeu la venda transversal i els descomptes per impulsar i augmentar les vendes."
 
 #. module: pos_sale

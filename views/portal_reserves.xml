@@ -29,7 +29,7 @@
 
     <!-- /my/quotes : breadcrumb/títol -->
 
-<template id="portal_my_quotations_hide_default_breadcrumb"
+<!-- <template id="portal_my_quotations_hide_default_breadcrumb"
           inherit_id="portal.portal_breadcrumbs"
           name="Hide default 'Pressupostos' on /my/quotes"
           priority="26">
@@ -44,7 +44,7 @@
       </t>
     </li>
   </xpath>
-</template>
+</template> -->
 
   </data>
 </odoo>
