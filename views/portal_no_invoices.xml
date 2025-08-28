@@ -1,0 +1,17 @@
+<odoo>
+  <template id="portal_my_home_no_invoices"
+            inherit_id="portal.portal_my_home"
+            name="Portal Home - sense rebuts">
+    <!-- Elimina el link de Rebuts -->
+<xpath expr="//div[hasclass('o_portal_my_home')]/h3" position="inside">
+  <t t-javascript="true">
+    <script type="text/javascript"><![CDATA[
+      document.addEventListener('DOMContentLoaded', function () {
+        const invoicesA = document.querySelector("a[href='/my/invoices']");
+        if (invoicesA) invoicesA.remove();
+      });
+    ]]></script>
+  </t>
+</xpath>
+  </template>
+</odoo>

@@ -30,7 +30,7 @@
     </xpath>
 
     <!-- (C) Convertir el bloc de detalls del perfil en <details> col·lapsable -->
-    <xpath expr="//div[hasclass('o_portal_my_home')]/h3" position="inside">
+    <xpath expr="//div[hasclass('o_portal_my_home')]" position="inside">
       <t t-javascript="true">
         <script type="text/javascript"><![CDATA[
           document.addEventListener('DOMContentLoaded', function () {
@@ -92,4 +92,5 @@
     </xpath>
 
   </template>
+
 </odoo>

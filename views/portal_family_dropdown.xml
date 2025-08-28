@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="portal_my_home_family_dropdown"
+            inherit_id="portal.portal_my_home"
+            name="Portal Home - familiars dropdown">
+    <xpath expr="//div[hasclass('o_portal_my_home')]/h3" position="before">
+      <t t-set="partner" t-value="request.env.user.partner_id"/>
+      <t t-set="familia_membre"
+         t-value="request.env['familia.miembro'].sudo().search([('partner_id','=',partner.id)], limit=1)"/>
+      <t t-set="familia" t-value="familia_membre.familia_id if familia_membre else False"/>
+      <t t-set="membres" t-value="familia.miembros_ids if familia else []"/>
+
+      <t t-if="membres">
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <label for="select-familiar" class="form-label">👥 Selecciona familiar</label>
+            <select id="select-familiar" class="form-select">
+              <t t-foreach="membres" t-as="membre">
+                <option t-att-value="membre.partner_id.id"
+                        t-att-data-email="membre.partner_id.email or ''"
+                        t-att-data-phone="membre.partner_id.phone or ''"
+                        t-att-data-saldo="membre.partner_id.saldo_a_favor or 0.0">
+                  <t t-esc="membre.partner_id.name"/>
+                </option>
+              </t>
+            </select>
+          </div>
+        </div>
+        <div id="info-familiar" class="mt-3"></div>
+      </t>
+    </xpath>
+  </template>
+</odoo>

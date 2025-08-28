@@ -6,6 +6,12 @@
     'category': 'Sales',
     'images': ['static/description/icon.png'],
     'depends': ['base', 'contacts', 'saldo_favor','sale', 'portal', 'website'],
+    'assets': {
+    'web.assets_frontend': [
+        'familia/static/src/js/portal_family.js',
+    ],
+},
+'qweb': [],
     'data': [
         'security/familia_security.xml',
         'security/ir.model.access.csv',
@@ -18,6 +24,8 @@
         'views/portal_reserves.xml', 
         'views/portal_my_home_barcode.xml',
         'data/rename_sale_menu.xml',
+        'views/portal_no_invoices.xml',
+        'views/portal_family_dropdown.xml',
 
 
     ],
