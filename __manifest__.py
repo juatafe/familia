@@ -15,6 +15,7 @@
     'data': [
         'security/familia_security.xml',
         'security/ir.model.access.csv',
+        'security/familia_record_rules.xml',
         'views/familia_views.xml',
         'views/miembro_familia_views.xml',
         'views/familia_menu.xml',
@@ -25,7 +26,10 @@
         'views/portal_my_home_barcode.xml',
         'data/rename_sale_menu.xml',
         'views/portal_no_invoices.xml',
-        'views/portal_family_dropdown.xml',
+        #'views/portal_family_dropdown.xml',
+        'views/portal_family_block.xml',
+        'views/portal_family_sidebar.xml',
+        'views/portal_manage_member.xml',
 
 
     ],

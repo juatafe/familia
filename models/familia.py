@@ -13,6 +13,8 @@ class Familia(models.Model):
     numero_familia = fields.Char(string='Nº Familia', required=False, index=True)
     saldo_total = fields.Float(string='Saldo Total', readonly=True)
     miembros_ids = fields.One2many('familia.miembro', 'familia_id', string="Miembros")
+    #saldo_anual = fields.Float(string='Saldo Anual', readonly=False, help="Saldo total disponible a l'any per al familiar.")
+
 
     _sql_constraints = [
         ('numero_familia_unique', 'unique(numero_familia)', 'El número de familia debe ser único.')

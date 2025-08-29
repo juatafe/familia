@@ -1,11 +1,10 @@
 <odoo>
-  <template id="portal_my_home_family_dropdown"
+  <template id="portal_family_sidebar"
             inherit_id="portal.portal_my_home"
             name="Portal Home - Gestió familiar">
 
-    <!-- Insertem dins del sidebar -->
-    <xpath expr="//div[@id='o_my_sidebar']" position="inside">
-      <!-- cridem al sub-template -->
+    <!-- Inserim dins del contenidor principal -->
+    <xpath expr="//div[hasclass('o_portal_my_home')]" position="inside">
       <t t-call="familia.portal_family_block"/>
     </xpath>
 

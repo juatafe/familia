@@ -8,6 +8,7 @@
                 <field name="partner_id"/>
                 <field name="familia_id"/>
                 <field name="limite_gasto"/>
+                <field name="saldo_anual"/>
                 <field name="es_administrador"/>
             </tree>
         </field>
@@ -24,6 +25,7 @@
                         <field name="partner_id"/>
                         <field name="familia_id"/>
                         <field name="limite_gasto"/>
+                        <field name="saldo_anual"/>
                         <!-- <field name="clave" password="True"/> -->
                         <field name="es_administrador"/>
                     </group>

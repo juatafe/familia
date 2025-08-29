@@ -1,0 +1,52 @@
+<odoo>
+  <template id="portal_manage_member" name="Portal - Gestionar membre">
+    <t t-call="portal.portal_layout">
+      <div class="container mt-4">
+        <h2>✏️ Editar dades de <t t-esc="partner.name"/></h2>
+
+        <form action="/familia/save_member" method="post" class="o_portal_form">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <input type="hidden" name="partner_id" t-att-value="partner.id"/>
+
+          <div class="mb-3">
+            <label class="form-label">Nom</label>
+            <input type="text" name="name" t-att-value="partner.name" class="form-control"/>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" t-att-value="partner.email" class="form-control"/>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Telèfon</label>
+            <input type="text" name="phone" t-att-value="partner.phone" class="form-control"/>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Mòbil</label>
+            <input type="text" name="mobile" t-att-value="partner.mobile" class="form-control"/>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Adreça</label>
+            <input type="text" name="street" t-att-value="partner.street" class="form-control"/>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Ciutat</label>
+            <input type="text" name="city" t-att-value="partner.city" class="form-control"/>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Codi Postal</label>
+            <input type="text" name="zip" t-att-value="partner.zip" class="form-control"/>
+          </div>
+
+          <button type="submit" class="btn btn-primary">💾 Desa</button>
+          <a href="/my" class="btn btn-secondary">⬅️ Tornar</a>
+        </form>
+      </div>
+    </t>
+  </template>
+</odoo>

@@ -1,0 +1,55 @@
+<odoo>
+  <template id="portal_family_block" name="Bloc Gestió familiar">
+    <t t-set="partner" t-value="request.env.user.partner_id"/>
+    <t t-set="familia_membre"
+       t-value="request.env['familia.miembro'].sudo().search([('partner_id','=',partner.id)], limit=1)"/>
+    <t t-set="familia" t-value="familia_membre.familia_id if familia_membre else False"/>
+    <t t-set="membres" t-value="familia.miembros_ids if familia else []"/>
+    <t t-set="is_admin" t-value="familia_membre.es_administrador"/>
+
+    <t t-if="membres">
+      <details class="card shadow-sm mb-3">
+        <summary class="card-header h5 mb-0">👨‍👩‍👧‍👦 Gestió familiar</summary>
+        <div class="card-body">
+
+          <!-- 🔹 Saldo familiar -->
+          <p class="mb-3">
+            🏦 Saldo familiar actual:
+            <strong><t t-esc="familia.saldo_total or 0.0"/> €</strong>
+          </p>
+
+          <!-- 🔹 Selector de familiar -->
+          <label for="select-familiar" class="form-label">Selecciona familiar</label>
+          <select id="select-familiar" class="form-select">
+            <option value="" selected="selected">-- Selecciona --</option>
+            <t t-foreach="membres" t-as="membre">
+              <option
+                t-att-value="membre.id"
+                t-att-data-name="membre.partner_id.name"
+                t-att-data-limit="str(membre.tiene_limite).lower()"
+                t-att-data-limit-amount="membre.limite_gasto or 0.0"
+                t-att-data-member-admin="str(membre.es_administrador).lower()"
+                t-att-data-current-admin="str(is_admin).lower()"
+                t-att-data-familia-saldo="membre.familia_id.saldo_total or 0.0"
+                t-att-data-saldo-anual="membre.saldo_anual or 0.0"
+                t-att-data-edit-url="'/familia/manage_member/%s' % membre.partner_id.id"
+
+              >
+                <t t-esc="membre.partner_id.name"/>
+              </option>
+            </t>
+          </select>
+
+          <!-- 🔹 Informació addicional del familiar -->
+          <details id="info-familiar" class="mt-3 card shadow-sm d-none">
+            <summary class="card-header h6 mb-0 text-primary">📋 Opcions del familiar</summary>
+            <div class="card-body" id="info-familiar-body">
+              <em>Selecciona un familiar per gestionar-lo…</em>
+            </div>
+          </details>
+
+        </div>
+      </details>
+    </t>
+  </template>
+</odoo>

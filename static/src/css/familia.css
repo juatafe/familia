@@ -1,0 +1,22 @@
+/* Icones per als <details> */
+details.card[open] > summary.card-header::after {
+  content: "▲";
+  float: right;
+  font-size: 0.8em;
+  margin-top: 4px;
+}
+details.card > summary.card-header::after {
+  content: "▼";
+  float: right;
+  font-size: 0.8em;
+  margin-top: 4px;
+}
+
+/* Inputs de diners més curts */
+.input-group.input-euro {
+  max-width: 50px;
+  margin-bottom: 5.5rem;
+}
+.input-group.input-euro .form-control {
+  text-align: right;
+}
