@@ -1,6 +1,23 @@
 from odoo import http
 from odoo.http import request
 from odoo.exceptions import AccessError
+from odoo.addons.sale.controllers.portal import CustomerPortal as SaleCustomerPortal
+
+
+class FamiliaPortalHome(SaleCustomerPortal):
+    def _prepare_home_portal_values(self, counters):
+        values = super()._prepare_home_portal_values(counters)
+
+        if 'order_count' in counters:
+            partner = request.env.user.partner_id.commercial_partner_id
+            SaleOrder = request.env['sale.order'].sudo()
+            # Comptar només les comandes confirmades (sale), excloent done
+            values['order_count'] = SaleOrder.search_count([
+                ('partner_id', 'child_of', [partner.id]),
+                ('state', '=', 'sale'),
+            ])
+        return values
+
 
 class PortalFamily(http.Controller):
 
